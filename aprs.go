@@ -165,6 +165,12 @@ func (ac *AprsConnection) receiveInConnection(ctx context.Context, conn *textpro
 }
 
 func receiveMessage(ctx context.Context, conn *textproto.Conn, msgCh chan<- string, errCh chan<- error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("recovered panic in receiveMessage(): ", r)
+		}
+	}()
+
 	msg, err := conn.ReadLine()
 
 	select {
