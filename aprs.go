@@ -229,13 +229,14 @@ func (ac *AprsConnection) dial() (*textproto.Conn, error) {
 }
 
 func keepAlive(ctx context.Context, conn *textproto.Conn) {
-	tick := time.Tick(keepaliveInterval)
+	ticker := time.NewTicker(keepaliveInterval)
+	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
 			return
-		case <-tick:
+		case <-ticker.C:
 			log.Println("sending keepalive beacon")
 			conn.PrintfLine(keepaliveString)
 		default:
