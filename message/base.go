@@ -1,6 +1,7 @@
 package message
 
 import (
+	"strings"
 	"time"
 )
 
@@ -75,4 +76,18 @@ type ReceiverBase interface {
 
 	// Altitude returns the altitude of the station in m.
 	Altitude() int
+}
+
+func extractMessageType(message string) (string, error) {
+	start := strings.Index(message, ">")
+	if start < 0 {
+		return "", InvalidFormatError{msg: message}
+	}
+
+	end := strings.Index(message[start:], ",")
+	if end < 0 {
+		return "", InvalidFormatError{msg: message}
+	}
+
+	return message[start+1 : start+end], nil
 }
